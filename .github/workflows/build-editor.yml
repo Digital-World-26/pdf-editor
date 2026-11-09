@@ -1,0 +1,55 @@
+
+name: Build Digital World PDF Editor
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.2
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build PDF Editor
+        env:
+          PUBLIC_BASE_PATH: /Drive/pdf-editor/editor/
+        run: pnpm build
+
+      - name: Verify Build
+        run: |
+          test -f dist/index.html
+          test -d dist/static
+          echo "PDF Editor build successful"
+
+      - name: Package Build
+        run: |
+          cd dist
+          zip -r ../digital-world-pdf-editor.zip .
+
+      - name: Upload Build ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: Digital-World-PDF-Editor
+          path: digital-world-pdf-editor.zip
+          retention-days: 7
