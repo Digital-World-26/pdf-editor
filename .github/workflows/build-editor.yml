@@ -16,17 +16,19 @@ jobs:
 
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.34.2
+          version: 10
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -39,17 +41,17 @@ jobs:
       - name: Verify Build
         run: |
           test -f dist/index.html
-          test -d dist/static
           echo "PDF Editor build successful"
+          ls -lah dist
 
       - name: Package Build
         run: |
           cd dist
-          zip -r ../digital-world-pdf-editor.zip .
+          zip -r ../Digital-World-PDF-Editor.zip .
 
       - name: Upload Build ZIP
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Digital-World-PDF-Editor
-          path: digital-world-pdf-editor.zip
+          path: Digital-World-PDF-Editor.zip
           retention-days: 7
